@@ -36,6 +36,24 @@ defmodule LiveViewStudioWeb.LightLive do
         <span class="sr-only">On</span>
       </button>
     </div>
+
+      <div id="license" style="margin-top: 3rem">
+      <div class="card">
+        <div class="content">
+          <div id="seats" class="seats">
+            <span>
+              The brightness is currently
+              <strong><%= @brightness %></strong>.
+            </span>
+          </div>
+
+          <form id="update-brightness" phx-change="update">
+            <input type="range" min="1" max="100"
+                  name="brightness" value="<%= @brightness %>" />
+          </form>
+        </div>
+      </div>
+    </div>
     """
   end
 
@@ -56,6 +74,14 @@ defmodule LiveViewStudioWeb.LightLive do
 
   def handle_event("off", _, socket) do
     socket = assign(socket, :brightness, 0)
+    {:noreply, socket}
+  end
+
+  def handle_event("update", %{"brightness" => brightness}, socket) do
+    brightness = String.to_integer(brightness)
+
+    socket = assign(socket, brightness: brightness)
+
     {:noreply, socket}
   end
 end
