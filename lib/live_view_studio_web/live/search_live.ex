@@ -19,10 +19,10 @@ defmodule LiveViewStudioWeb.SearchLive do
     <h1>Find a Store</h1>
     <div id="search">
       <form id="zip-search" phx-submit="zip-search">
-        <input type="text" name="zip" value="<%= @zip %>"
-               placeholder="Zip Code"
-               autofocus autocomplete="off"
-               <%= if @loading, do: "readonly" %> />
+        <input type="text" name="zip" value={@zip}
+          placeholder="Zip Code"
+          autofocus autocomplete="off"
+          readonly={@loading} />
 
         <button type="submit">
           <img src="images/search.svg">
@@ -93,7 +93,11 @@ defmodule LiveViewStudioWeb.SearchLive do
         {:noreply, socket}
 
       stores ->
-        socket = assign(socket, stores: stores, loading: false)
+        socket =
+          socket
+          |> clear_flash()
+          |> assign(stores: stores, loading: false)
+
         {:noreply, socket}
     end
   end
