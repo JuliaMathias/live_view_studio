@@ -2,7 +2,7 @@ defmodule LiveViewStudioWeb.LightLive do
   use LiveViewStudioWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, :brightness, 10)
+    socket = assign(socket, brightness: 10, temp: 3000)
     {:ok, socket}
   end
 
@@ -11,7 +11,7 @@ defmodule LiveViewStudioWeb.LightLive do
     <h1>Front Porch Light</h1>
     <div id="light">
       <div class="meter">
-        <span style="width: <%= @brightness %>%">
+        <span style="background-color: <%= temp_color(@temp) %>; width: <%= @brightness %>%">
           <%= @brightness %>%
         </span>
       </div>
@@ -35,25 +35,39 @@ defmodule LiveViewStudioWeb.LightLive do
         <img src="images/light-on.svg">
         <span class="sr-only">On</span>
       </button>
-    </div>
 
       <div id="license" style="margin-top: 3rem">
-      <div class="card">
-        <div class="content">
-          <div id="seats" class="seats">
-            <span>
-              The brightness is currently
-              <strong><%= @brightness %></strong>.
-            </span>
-          </div>
+        <div class="card">
+          <div class="content">
+            <div id="seats" class="seats">
+              <span>
+                The brightness is currently
+                <strong><%= @brightness %></strong>.
+              </span>
+            </div>
 
-          <form id="update-brightness" phx-change="update">
-            <input type="range" min="1" max="100"
-                  name="brightness" value="<%= @brightness %>" />
-          </form>
+            <form id="update-brightness" phx-change="update">
+              <input type="range" min="1" max="100"
+                    name="brightness" value="<%= @brightness %>"  />
+
+              <p style="margin-top: 1rem !important; --tw-text-opacity: 1; color: rgba(54, 65, 82, var(--tw-text-opacity))">
+              <b>Temperature<b/>:&nbsp;
+              <input type="radio" id="3000" name="temp" value="3000"
+                <%= if 3000 == @temp, do: "checked" %> />
+              <label for="3000">warm</label>
+
+              <input type="radio" id="4000" name="temp" value="4000"
+                <%= if 4000 == @temp, do: "checked" %> />
+              <label for="4000">cool</label>
+
+              <input type="radio"id="5000" name="temp" value="5000"
+                <%= if 5000 == @temp, do: "checked" %> />
+              <label for="5000">daylight</label>
+              </p>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
     """
   end
 
@@ -77,11 +91,16 @@ defmodule LiveViewStudioWeb.LightLive do
     {:noreply, socket}
   end
 
-  def handle_event("update", %{"brightness" => brightness}, socket) do
+  def handle_event("update", %{"brightness" => brightness, "temp" => temp}, socket) do
     brightness = String.to_integer(brightness)
+    temp = String.to_integer(temp)
 
-    socket = assign(socket, brightness: brightness)
+    socket = assign(socket, brightness: brightness, temp: temp)
 
     {:noreply, socket}
   end
+
+  defp temp_color(3000), do: "#F1C40D"
+  defp temp_color(4000), do: "#FEFF66"
+  defp temp_color(5000), do: "#99CCFF"
 end
