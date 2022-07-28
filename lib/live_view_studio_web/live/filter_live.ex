@@ -28,6 +28,8 @@ defmodule LiveViewStudioWeb.FilterLive do
             <%= for price <- ["$", "$$", "$$$"]  do %>
               <%= price_checkbox(price: price, checked: price in @prices) %>
             <% end %>
+
+            <a href="#" phx-click="clear">Clear All</a>
           </div>
         </div>
       </form>
@@ -60,6 +62,12 @@ defmodule LiveViewStudioWeb.FilterLive do
     params = [type: type, prices: prices]
     boats = Boats.list_boats(params)
     socket = assign(socket, params ++ [boats: boats])
+    {:noreply, socket}
+  end
+
+  def handle_event("clear", _params, socket) do
+    boats = Boats.list_boats()
+    socket = assign(socket, boats: boats, type: "", prices: [])
     {:noreply, socket}
   end
 
