@@ -51,23 +51,27 @@ defmodule LiveViewStudioWeb.LightLive do
                     name="brightness" value="<%= @brightness %>"  />
 
               <p style="margin-top: 1rem !important; --tw-text-opacity: 1; color: rgba(54, 65, 82, var(--tw-text-opacity))">
-              <b>Temperature<b/>:&nbsp;
-              <input type="radio" id="3000" name="temp" value="3000"
-                <%= if 3000 == @temp, do: "checked" %> />
-              <label for="3000">warm</label>
 
-              <input type="radio" id="4000" name="temp" value="4000"
-                <%= if 4000 == @temp, do: "checked" %> />
-              <label for="4000">cool</label>
-
-              <input type="radio"id="5000" name="temp" value="5000"
-                <%= if 5000 == @temp, do: "checked" %> />
-              <label for="5000">daylight</label>
+                <b>Temperature<b/>:&nbsp;
+                <%= for temp <- [3000, 4000, 5000]  do %>
+                  <%= temp_radio_button(temp: temp, checked: temp == @temp) %>
+                <% end %>
               </p>
             </form>
           </div>
         </div>
       </div>
+    """
+  end
+
+  defp temp_radio_button(assigns) do
+    assigns = Enum.into(assigns, %{})
+
+    ~L"""
+    <input type="radio" id="<%= @temp %>"
+            name="temp" value="<%= @temp %>"
+            <%= if @checked, do: "checked" %> />
+    <label for="<%= @temp %>"><%= @temp %></label>
     """
   end
 
