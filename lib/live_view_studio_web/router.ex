@@ -41,6 +41,7 @@ defmodule LiveViewStudioWeb.Router do
     live "/desks", DesksLive
     live "/underwater", UnderwaterLive
     live "/underwater/show", UnderwaterLive, :show_modal
+    live "/git-repos", GitReposLive
   end
 
   # Other scopes may use custom stacks.

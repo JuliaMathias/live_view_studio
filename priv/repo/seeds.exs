@@ -14,6 +14,7 @@ alias LiveViewStudio.Boats.Boat
 alias LiveViewStudio.Donations.Donation
 alias LiveViewStudio.Incidents.Incident
 alias LiveViewStudio.Geo
+alias LiveViewStudio.GitRepos.GitRepo
 alias LiveViewStudio.PizzaOrders.PizzaOrder
 alias LiveViewStudio.Repo
 alias LiveViewStudio.Servers.Server
@@ -410,5 +411,41 @@ end
   zip: "80204",
   open: true,
   hours: "8am - 10pm M-F"
+}
+|> Repo.insert!()
+
+%GitRepo{
+  name: "phoenix_live_view",
+  url: "https://github.com/clarkware/phoenix_live_view",
+  owner_login: "clarkware",
+  owner_url: "https://github.com/clarkware",
+  fork: true,
+  stars: 0,
+  language: "elixir",
+  license: "mit"
+}
+|> Repo.insert!()
+
+%GitRepo{
+  name: "rails",
+  url: "https://github.com/rails/rails",
+  owner_login: "rails",
+  owner_url: "https://github.com/rails",
+  fork: false,
+  stars: 45600,
+  language: "ruby",
+  license: "mit"
+}
+|> Repo.insert!()
+
+%GitRepo{
+  name: "ruby",
+  url: "https://github.com/ruby/ruby",
+  owner_login: "ruby",
+  owner_url: "https://github.com/ruby",
+  fork: false,
+  stars: 16800,
+  language: "ruby",
+  license: "bsdl"
 }
 |> Repo.insert!()
