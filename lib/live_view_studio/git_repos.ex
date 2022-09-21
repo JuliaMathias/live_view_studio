@@ -21,6 +21,25 @@ defmodule LiveViewStudio.GitRepos do
     Repo.all(GitRepo)
   end
 
+  def list_git_repos(criteria) when is_list(criteria) do
+    query = from(g in GitRepo)
+
+    Enum.reduce(criteria, query, fn
+      {:language, ""}, query ->
+        query
+
+      {:language, language}, query ->
+        from q in query, where: q.language == ^language
+
+      {:license, ""}, query ->
+        query
+
+      {:license, license}, query ->
+        from q in query, where: q.license == ^license
+    end)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single git_repo.
 
