@@ -104,6 +104,8 @@ defmodule LiveViewStudio.Servers do
     Server.changeset(server, attrs)
   end
 
+  def get_server_by_name(name), do: Repo.get_by(Server, name: name)
+
   def subscribe do
     Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, "servers")
   end
