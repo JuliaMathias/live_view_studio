@@ -11,8 +11,8 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:ok, assign(socket, servers: servers)}
   end
 
-  def handle_params(%{"id" => id}, _url, socket) do
-    server = Servers.get_server!(String.to_integer(id))
+  def handle_params(%{"name" => name}, _url, socket) do
+    server = Servers.get_server_by_name(name)
 
     socket =
       assign(socket,
@@ -41,13 +41,16 @@ defmodule LiveViewStudioWeb.ServersLive do
                 to: Routes.servers_path(@socket, :new),
                 class: "button" %>
           <%= for server <- @servers do %>
-            <%= live_patch link_body(server),
-                  to: Routes.live_path(
-                    @socket,
-                    __MODULE__,
-                    id: server.id
-                  ),
-                  class: (if server == @selected_server, do: "active") %>
+            <div>
+              <%= live_patch link_body(server),
+                    to: Routes.live_path(
+                              @socket,
+                              __MODULE__,
+                              name: server.name
+                        ),
+                    class: if server == @selected_server, do: "active" %>
+            </div>
+
           <% end %>
         </nav>
       </div>
