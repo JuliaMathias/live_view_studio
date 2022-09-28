@@ -36,6 +36,10 @@ defmodule LiveViewStudio.Vehicles do
     |> Repo.all()
   end
 
+  def count_vehicles do
+    Repo.aggregate(Vehicle, :count, :id)
+  end
+
   @doc """
   Gets a single vehicle.
 
