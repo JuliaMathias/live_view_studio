@@ -19,6 +19,7 @@ alias LiveViewStudio.PizzaOrders.PizzaOrder
 alias LiveViewStudio.Repo
 alias LiveViewStudio.Servers.Server
 alias LiveViewStudio.Stores.Store
+alias LiveViewStudio.Vehicles.Vehicle
 
 %Boat{
   model: "1760 Retriever Jon Deluxe",
@@ -449,3 +450,12 @@ end
   license: "bsdl"
 }
 |> Repo.insert!()
+
+for _i <- 1..1000 do
+  %Vehicle{
+    make: Faker.Vehicle.make(),
+    model: Faker.Vehicle.model(),
+    color: Faker.Color.name()
+  }
+  |> Repo.insert!()
+end
