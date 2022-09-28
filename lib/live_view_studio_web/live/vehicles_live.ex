@@ -4,7 +4,8 @@ defmodule LiveViewStudioWeb.VehiclesLive do
   alias LiveViewStudio.Vehicles
 
   def mount(_params, _session, socket) do
-    {:ok, socket, temporary_assigns: [vehicles: []]}
+    {:ok, assign(socket, total_vehicles: Vehicles.count_vehicles()),
+     temporary_assigns: [vehicles: []]}
   end
 
   def handle_params(params, _url, socket) do
@@ -98,17 +99,21 @@ defmodule LiveViewStudioWeb.VehiclesLive do
                               "previous") %>
         <% end %>
         <%= for i <- (@options.page - 2)..(@options.page + 2), i > 0 do %>
-          <%= pagination_link(@socket,
-                                i,
-                                i,
-                                @options.per_page,
-                                (if i == @options.page, do: "active")) %>
+          <%= if i <= ceil(@total_vehicles / @options.per_page) do %>
+            <%= pagination_link(@socket,
+                                  i,
+                                  i,
+                                  @options.per_page,
+                                  (if i == @options.page, do: "active")) %>
+          <% end %>
         <% end %>
-        <%= pagination_link(@socket,
+        <%= if (@options.page * @options.per_page) < @total_vehicles do %>
+          <%= pagination_link(@socket,
                               "Next",
                               @options.page + 1,
                               @options.per_page,
                               "next") %>
+        <% end %>
       </div>
         </div>
       </div>
