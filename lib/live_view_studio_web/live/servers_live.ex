@@ -2,12 +2,16 @@ defmodule LiveViewStudioWeb.ServersLive do
   use LiveViewStudioWeb, :live_view
 
   alias LiveViewStudio.Servers
+  alias LiveViewStudio.Servers.Server
 
   def mount(_params, _session, socket) do
     servers = Servers.list_servers()
 
+    changeset = Servers.change_server(%Server{})
+
     socket =
       assign(socket,
+        changeset: changeset,
         servers: servers,
         selected_server: hd(servers)
       )
@@ -36,9 +40,13 @@ defmodule LiveViewStudioWeb.ServersLive do
   def render(assigns) do
     ~L"""
     <h1>Servers</h1>
+
     <div id="servers">
       <div class="sidebar">
         <nav>
+          <%= live_patch "New Server",
+            to: Routes.servers_path(@socket, :new),
+            class: "button" %>
           <%= for server <- @servers do %>
             <div>
               <%= live_patch link_body(server),
@@ -55,6 +63,39 @@ defmodule LiveViewStudioWeb.ServersLive do
       </div>
       <div class="main">
         <div class="wrapper">
+        <%= if @live_action == :new do %>
+          <%= f = form_for @changeset, "#", phx_submit: "save"  %>
+            <div class="field">
+              <%= label f , :name %>
+              <%= text_input f, :name, autocomplete: "off" %>
+              <%= error_tag f, :name %>
+            </div>
+
+            <div class="field">
+              <%= label f, :framework %>
+              <%= text_input f, :framework, autocomplete: "off" %>
+              <%= error_tag f, :framework %>
+            </div>
+
+            <div class="field">
+              <%= label f, :size, "Size (MB)" %>
+              <%= number_input f, :size, autocomplete: "off" %>
+              <%= error_tag f, :size %>
+            </div>
+
+            <div class="field">
+              <%= label f, :git_repo, "Git Repo" %>
+              <%= text_input f, :git_repo, autocomplete: "off" %>
+              <%= error_tag f, :git_repo %>
+            </div>
+
+            <%= submit "Save", phx_disable_with: "Saving..." %>
+
+            <%= live_patch "Cancel",
+                to: Routes.live_path(@socket, __MODULE__),
+                class: "cancel" %>
+          </form>
+        <% else %>
           <div class="card">
             <div class="header">
               <h2><%= @selected_server.name %></h2>
@@ -90,16 +131,42 @@ defmodule LiveViewStudioWeb.ServersLive do
               </blockquote>
             </div>
           </div>
+        <% end %>
         </div>
       </div>
     </div>
     """
   end
 
+  def handle_event("save", %{"server" => params}, socket) do
+    case Servers.create_server(params) do
+      {:ok, server} ->
+        socket =
+          update(
+            socket,
+            :servers,
+            fn servers -> [server | servers] end
+          )
+
+        changeset = Servers.change_server(%Server{})
+
+        socket = assign(socket, changeset: changeset)
+
+        :timer.sleep(500)
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        socket = assign(socket, changeset: changeset)
+        {:noreply, socket}
+    end
+  end
+
   defp link_body(server) do
-    assigns = %{name: server.name}
+    assigns = %{name: server.name, status: server.status}
 
     ~L"""
+    <span class="status <%= @status %>"></span>
     <img src="/images/server.svg">
     <%= @name %>
     """
