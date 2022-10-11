@@ -5,6 +5,8 @@ defmodule LiveViewStudioWeb.ServersLive do
   alias LiveViewStudio.Servers.Server
 
   def mount(_params, _session, socket) do
+    if connected?(socket), do: Servers.subscribe()
+
     servers = Servers.list_servers()
 
     changeset = Servers.change_server(%Server{})
@@ -143,19 +145,10 @@ defmodule LiveViewStudioWeb.ServersLive do
 
   def handle_event("save", %{"server" => params}, socket) do
     case Servers.create_server(params) do
-      {:ok, server} ->
-        socket =
-          update(
-            socket,
-            :servers,
-            fn servers -> [server | servers] end
-          )
-
+      {:ok, _server} ->
         changeset = Servers.change_server(%Server{})
 
         socket = assign(socket, changeset: changeset)
-
-        :timer.sleep(500)
 
         {:noreply, socket}
 
@@ -184,11 +177,38 @@ defmodule LiveViewStudioWeb.ServersLive do
 
     {:ok, server} = Servers.toggle_status(server)
 
+    socket = assign(socket, selected_server: server)
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:server_created, server}, socket) do
+    socket =
+      update(
+        socket,
+        :servers,
+        fn servers -> [server | servers] end
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:server_updated, server}, socket) do
+    # If the updated server is the selected server,
+    # assign it so the button is re-rendered with
+    # the correct status text.
+    socket =
+      if server.id == socket.assigns.selected_server.id do
+        assign(socket, selected_server: server)
+      else
+        socket
+      end
+
+    # Refetch the list of servers so the status indicators
+    # in the sidebar are updated:
+
     servers = Servers.list_servers()
-
-    socket = assign(socket, servers: servers, selected_server: server)
-
-    :timer.sleep(500)
+    socket = assign(socket, servers: servers)
 
     {:noreply, socket}
   end
