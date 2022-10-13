@@ -17,6 +17,7 @@ import { Socket } from "phoenix";
 import NProgress from "nprogress";
 import { LiveSocket } from "phoenix_live_view";
 import flatpickr from "flatpickr";
+import { AsYouType } from "libphonenumber-js";
 
 let Hooks = {};
 
@@ -53,6 +54,14 @@ Hooks.DatePicker = {
 
   handleDatePicked(selectedDates, dateStr, instance) {
     this.pushEvent("date-picked", dateStr);
+  },
+};
+
+Hooks.PhoneNumber = {
+  mounted() {
+    this.el.addEventListener("input", (e) => {
+      this.el.value = new AsYouType("US").input(this.el.value);
+    });
   },
 };
 
