@@ -16,13 +16,14 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import NProgress from "nprogress";
 import { LiveSocket } from "phoenix_live_view";
+import flatpickr from "flatpickr";
 
 let Hooks = {};
 
 Hooks.InfiniteScroll = {
   mounted() {
     console.log("Footer added to DOM!", this.el);
-    this.observer = new IntersectionObserver(entries => {
+    this.observer = new IntersectionObserver((entries) => {
       const entry = entries[0];
       if (entry.isIntersecting) {
         console.log("Footer is visible!");
@@ -41,6 +42,20 @@ Hooks.InfiniteScroll = {
   },
 };
 
+Hooks.DatePicker = {
+  mounted() {
+    flatpickr(this.el, {
+      enableTime: false,
+      dateFormat: "F d, Y",
+      onChange: this.handleDatePicked.bind(this),
+    });
+  },
+
+  handleDatePicked(selectedDates, dateStr, instance) {
+    this.pushEvent("date-picked", dateStr);
+  },
+};
+
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
@@ -51,8 +66,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
 });
 
 // Show progress bar on live navigation and form submits
-window.addEventListener("phx:page-loading-start", info => NProgress.start());
-window.addEventListener("phx:page-loading-stop", info => NProgress.done());
+window.addEventListener("phx:page-loading-start", (info) => NProgress.start());
+window.addEventListener("phx:page-loading-stop", (info) => NProgress.done());
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();
