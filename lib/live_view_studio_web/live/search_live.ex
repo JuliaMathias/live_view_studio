@@ -30,11 +30,7 @@ defmodule LiveViewStudioWeb.SearchLive do
         </button>
       </form>
 
-      <%= if @loading do %>
-        <div class="loader">
-          Loading...
-        </div>
-      <% end %>
+    <%= live_component @socket,                         LiveViewStudioWeb.LoadingComponent, loading: @loading %>
 
       <div class="stores">
         <ul>
