@@ -25,6 +25,11 @@ defmodule LiveViewStudioWeb.VolunteersLive do
         fn volunteers -> [volunteer | volunteers] end
       )
 
+    socket =
+      assign(socket,
+        recent_activity: "#{volunteer.name} checked in!"
+      )
+
     {:noreply, socket}
   end
 
